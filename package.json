@@ -1,0 +1,26 @@
+{
+  "name": "@genseam/asl-voice",
+  "version": "0.2.0",
+  "type": "module",
+  "description": "Real-time Voice Stream Assistant, Low-Latency VAD & Conversational Barge-In in AgentScript",
+  "main": "src/voice.asl",
+  "module": "bridges/ts/index.ts",
+  "types": "bridges/ts/index.ts",
+  "exports": {
+    ".": "./bridges/ts/index.ts",
+    "./vad": "./bridges/vad.js"
+  },
+  "scripts": {
+    "test": "node --test tests/voice.test.js && node ../asl/bin/asl gate src/voice.asl src/vad.asl tests/voice_test.asl"
+  },
+  "keywords": [
+    "agentscript",
+    "voice",
+    "vad",
+    "barge-in",
+    "audio-stream",
+    "realtime"
+  ],
+  "author": "GenSEAM Team",
+  "license": "MIT"
+}
