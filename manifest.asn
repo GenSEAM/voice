@@ -2,4 +2,5 @@
  :version "0.1.0"
  :entry "src/voice.asl"
  :description "Streaming speech synthesis and voice capability controller"
+ :asl-first true
  :dependencies [])
