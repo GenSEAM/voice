@@ -1,5 +1,9 @@
 # @genseam/voice (ASL Voice Assistant Bridge)
 
+> [!NOTE]
+> **Status: In Development (Experimental / Future Roadmap)**
+> This package represents an experimental architectural sketch and audio bridge prototype for AgentScript. It is actively in development and not yet part of the stable core toolchain.
+
 Real-time Voice Stream Assistant, 16kHz PCM Audio Bridge, and sub-millisecond Voice Router for AgentScript and EDDIE Layer 2 Consultative Orchestrator.
 
 ## Installation
