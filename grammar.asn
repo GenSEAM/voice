@@ -1,0 +1,38 @@
+;; Package Grammar & Exported Symbol Registry (ASN)
+;; @genseam/asl-voice
+(:grammar
+  :package @genseam/asl-voice
+  :version "0.1.0"
+  :tokens-baseline 1
+  :symbols [
+    ;; 1-Token Symbols (Baseline)
+    (:sym :name "VadConfig" :kind :type :tokens 1)
+    (:sym :name "VadState" :kind :type :tokens 1)
+    (:sym :name "BargeInEvent" :kind :type :tokens 1)
+    (:sym :name "AudioFormat" :kind :type :tokens 1)
+    (:sym :name "AudioChunk" :kind :type :tokens 1)
+    (:sym :name "VoiceFrame" :kind :type :tokens 1)
+    (:sym :name "VoiceIntent" :kind :type :tokens 1)
+
+    ;; 2-Token Symbols (with :rationale)
+    (:sym :name "compute-energy" :kind :fn :tokens 2
+          :rationale "Calculates root-mean-square audio frame energy level")
+    (:sym :name "step-vad" :kind :fn :tokens 2
+          :rationale "Advances voice activity detector state machine by one audio frame")
+    (:sym :name "run-tests" :kind :fn :tokens 2
+          :rationale "Executes voice unit test suite")
+
+    ;; >2 Token Symbols (with :rationale)
+    (:sym :name "make-vad-config" :kind :fn :tokens 3
+          :rationale "Instantiates voice activity detector configuration with sample rate and thresholds")
+    (:sym :name "make-initial-vad-state" :kind :fn :tokens 4
+          :rationale "Constructs clean initial state for conversational speech detector")
+    (:sym :name "is-speech-frame" :kind :fn :tokens 3
+          :rationale "Evaluates if audio frame exceeds speech energy and zero-crossing criteria")
+    (:sym :name "trigger-barge-in" :kind :fn :tokens 3
+          :rationale "Fires high-priority interrupt event to halt agent audio speech synthesis")
+    (:sym :name "process-audio-chunk" :kind :fn :tokens 3
+          :rationale "Ingests raw audio streaming buffer into structured VoiceFrame")
+    (:sym :name "synthesize-speech-event" :kind :fn :tokens 3
+          :rationale "Constructs outbound speech synthesis event payload for audio stream")
+  ])
