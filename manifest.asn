@@ -1,6 +1,8 @@
 (:package @genseam/asl-voice
  :version "0.1.0"
+ :status "conceptual-schema"
  :entry "src/voice.asl"
- :description "Streaming speech synthesis and voice capability controller"
+ :description "Streaming speech synthesis and voice capability controller conceptual schema"
  :asl-first true
  :dependencies [])
+
