@@ -132,19 +132,19 @@
 
 (df test-cyrillic-phonetics-and-levenshtein [] -> Bool
   :d "Verifies Russian digraph transliteration, exact Levenshtein distance, and candidate matching"
-  (let [(t1 (hn/transliterate-cyrillic "шроуди"))
+  (let [(t1 (hn/transliterate-cyrillic "схема"))
         (t2 (hn/transliterate-cyrillic "щека"))
-        (dist1 (hn/levenshtein-distance "shrodi" "shrody"))
-        (dist2 (hn/levenshtein-distance "shroudi" "shrody"))
-        (t-upper (hn/transliterate-cyrillic "ШРОУДИ"))
-        (cands (list "asex" "shrody" "core"))
-        (m1 (hn/match-heard-name "шроуди" cands 2))
-        (m2 (hn/match-heard-name "шроуди" (list "completely-different") 1))]
+        (dist1 (hn/levenshtein-distance "eddi" "eddy"))
+        (dist2 (hn/levenshtein-distance "eddie" "eddy"))
+        (t-upper (hn/transliterate-cyrillic "СХЕМА"))
+        (cands (list "asex" "scheka" "core"))
+        (m1 (hn/match-heard-name "щека" cands 1))
+        (m2 (hn/match-heard-name "щека" (list "completely-different") 1))]
     (do
-      (assert (and (= t1 "shroudi") (= t2 "scheka")) "longest digraph transliteration must map correctly")
+      (assert (and (= t1 "skhema") (= t2 "scheka")) "longest digraph transliteration must map correctly")
       (assert (and (= dist1 1) (= dist2 2)) "levenshtein distance must accurately measure edit distance")
-      (assert (= t-upper "shroudi") "transliteration must normalize uppercase Cyrillic input")
-      (assert (and (.-is-match m1) (= (.-matched-target m1) "shrody")) "phonetic heard name must select closest project candidate")
+      (assert (= t-upper "skhema") "transliteration must normalize uppercase Cyrillic input")
+      (assert (and (.-is-match m1) (= (.-matched-target m1) "scheka")) "phonetic heard name must select closest project candidate")
       (assert (not (.-is-match m2)) "candidate matching must reject targets exceeding max edit distance")
       true)))
 

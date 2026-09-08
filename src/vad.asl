@@ -41,6 +41,14 @@
     :consecutive-silence 0
     :current-energy 0.0))
 
+(df compute-energy [(samples (List Float))] -> Float
+  :d "Calculates root-mean-square audio frame energy level"
+  (if (list-empty? samples)
+      0.0
+      (let [(sum (list-fold (fn [(acc Float) (s Float)] (+ acc (* s s))) 0.0 samples))
+            (n (list-length samples))]
+        (if (> n 0) (/ sum (float n)) 0.0))))
+
 (df is-speech-frame [(energy Float) (threshold Float)] -> Bool
   :d "Evaluates whether frame energy exceeds speech threshold"
   (> energy threshold))
