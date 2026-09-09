@@ -30,6 +30,7 @@
   :d "Verifies speech synthesis metadata generation."
   (let [(res (v/synthesize-speech-event "Hello world" "eddie-v1"))]
     (assert (> (string-length res) 0) "Synthesized speech event must be non-empty")
+    (assert (not (string-contains? res "error")) "Speech event must not contain error")
     true))
 
 (df test-compute-energy [] -> Bool
