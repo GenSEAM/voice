@@ -1,5 +1,5 @@
 (:asl-config
-  :workspace "@genseam/voice"
+  :workspace "voice"
   :version "0.1.0"
   :pure-asl true
   :asl-first true

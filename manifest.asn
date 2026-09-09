@@ -1,4 +1,4 @@
-(:package @genseam/asl-voice
+(:package asl-voice
  :version "0.1.0"
  :status "conceptual-schema"
  :entry "src/voice.asl"
