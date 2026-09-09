@@ -14,10 +14,13 @@
     (:sym :name "VoiceFrame" :kind :type :tokens 1)
     (:sym :name "VoiceIntent" :kind :type :tokens 1)
     (:sym :name "PhoneticRule" :kind :type :tokens 1)
+    (:sym :name "AudioStream" :kind :type :tokens 1)
 
     ;; 2-Token Symbols (with :rationale)
     (:sym :name "compute-energy" :kind :fn :tokens 2
           :rationale "Calculates root-mean-square audio frame energy level")
+    (:sym :name "compute-zcr" :kind :fn :tokens 2
+          :rationale "Calculates zero-crossing rate of PCM audio samples")
     (:sym :name "step-vad" :kind :fn :tokens 2
           :rationale "Advances voice activity detector state machine by one audio frame")
     (:sym :name "run-tests" :kind :fn :tokens 2
@@ -32,6 +35,28 @@
           :rationale "Constructs clean initial state for conversational speech detector")
     (:sym :name "is-speech-frame" :kind :fn :tokens 3
           :rationale "Evaluates if audio frame exceeds speech energy and zero-crossing criteria")
+    (:sym :name "is-speech-frame?" :kind :fn :tokens 3
+          :rationale "Evaluates whether audio frame energy exceeds speech threshold predicate")
+    (:sym :name "detect-voice-activity" :kind :fn :tokens 3
+          :rationale "Determines presence of conversational speech in audio samples")
+    (:sym :name "slice-utterance-frames" :kind :fn :tokens 3
+          :rationale "Slices contiguous speech utterance frames using VAD state and hangover hysteresis")
+    (:sym :name "make-audio-stream" :kind :fn :tokens 3
+          :rationale "Constructs circular PCM audio stream buffer with specified capacity and sample rate")
+    (:sym :name "stream-write-pcm" :kind :fn :tokens 3
+          :rationale "Appends PCM chunk to circular buffer with FIFO overflow eviction")
+    (:sym :name "stream-read-window" :kind :fn :tokens 3
+          :rationale "Extracts most recent window of PCM audio samples")
+    (:sym :name "stream-buffer-size" :kind :fn :tokens 3
+          :rationale "Queries current number of retained PCM samples in audio stream")
+    (:sym :name "stream-is-full?" :kind :fn :tokens 3
+          :rationale "Checks if audio stream buffer has reached maximum capacity")
+    (:sym :name "format-voice-intent-asn" :kind :fn :tokens 4
+          :rationale "Formats structured goal and action DAG into canonical ASN intent expression")
+    (:sym :name "dispatch-speech-utterance" :kind :fn :tokens 3
+          :rationale "Dispatches raw speech utterance through transliterator into structured intent")
+    (:sym :name "bind-intent-to-inflight" :kind :fn :tokens 4
+          :rationale "Binds structured voice intent into Tier 3 in-flight task frame")
     (:sym :name "trigger-barge-in" :kind :fn :tokens 3
           :rationale "Fires high-priority interrupt event to halt agent audio speech synthesis")
     (:sym :name "process-audio-chunk" :kind :fn :tokens 3
