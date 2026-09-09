@@ -13,6 +13,7 @@
     (:sym :name "AudioChunk" :kind :type :tokens 1)
     (:sym :name "VoiceFrame" :kind :type :tokens 1)
     (:sym :name "VoiceIntent" :kind :type :tokens 1)
+    (:sym :name "PhoneticRule" :kind :type :tokens 1)
 
     ;; 2-Token Symbols (with :rationale)
     (:sym :name "compute-energy" :kind :fn :tokens 2
@@ -21,6 +22,8 @@
           :rationale "Advances voice activity detector state machine by one audio frame")
     (:sym :name "run-tests" :kind :fn :tokens 2
           :rationale "Executes voice unit test suite")
+    (:sym :name "disambiguate-homophones" :kind :fn :tokens 2
+          :rationale "Repairs spoken homophone slips and phonetic errors against monorepo symbol lexicon")
 
     ;; >2 Token Symbols (with :rationale)
     (:sym :name "make-vad-config" :kind :fn :tokens 3
@@ -35,4 +38,16 @@
           :rationale "Ingests raw audio streaming buffer into structured VoiceFrame")
     (:sym :name "synthesize-speech-event" :kind :fn :tokens 3
           :rationale "Constructs outbound speech synthesis event payload for audio stream")
+    (:sym :name "is-valid-asn-input?" :kind :fn :tokens 4
+          :rationale "Validates whether input is a well-formed balanced ASN S-expression")
+    (:sym :name "build-symbol-lexicon" :kind :fn :tokens 3
+          :rationale "Constructs canonical monorepo AST symbol lexicon for homophone indexing")
+    (:sym :name "transpile-fast-path" :kind :fn :tokens 3
+          :rationale "Transpiles structured ASN, JSON, or YAML into canonical S-expression form")
+    (:sym :name "make-phonetic-rules" :kind :fn :tokens 3
+          :rationale "Constructs table of context-primed speech-to-text phonetic repair rules")
+    (:sym :name "emit-asn-intent" :kind :fn :tokens 3
+          :rationale "Synthesizes canonical ASN intent frame with goal and action DAG")
+    (:sym :name "transliterate-voice-prompt" :kind :fn :tokens 3
+          :rationale "Transliterates ambient voice input or raw prompt into canonical executable ASN form")
   ])
