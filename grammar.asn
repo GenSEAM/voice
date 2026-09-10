@@ -15,6 +15,9 @@
     (:sym :name "VoiceIntent" :kind :type :tokens 1)
     (:sym :name "PhoneticRule" :kind :type :tokens 1)
     (:sym :name "AudioStream" :kind :type :tokens 1)
+    (:sym :name "VoicePipelineConfig" :kind :type :tokens 1)
+    (:sym :name "VoicePipelineState" :kind :type :tokens 1)
+    (:sym :name "VoicePipelineResult" :kind :type :tokens 1)
 
     ;; 2-Token Symbols (with :rationale)
     (:sym :name "compute-energy" :kind :fn :tokens 2
@@ -75,4 +78,16 @@
           :rationale "Synthesizes canonical ASN intent frame with goal and action DAG")
     (:sym :name "transliterate-voice-prompt" :kind :fn :tokens 3
           :rationale "Transliterates ambient voice input or raw prompt into canonical executable ASN form")
+    (:sym :name "make-voice-pipeline-config" :kind :fn :tokens 3
+          :rationale "Constructs voice pipeline configuration")
+    (:sym :name "make-initial-voice-pipeline-state" :kind :fn :tokens 4
+          :rationale "Constructs clean initial voice pipeline state")
+    (:sym :name "pipeline-step-frame" :kind :fn :tokens 3
+          :rationale "Processes single audio frame through noise gating and speculative voice ID")
+    (:sym :name "pipeline-paraphrase-intent" :kind :fn :tokens 3
+          :rationale "Strips acoustic disfluencies and standardizes fast path commands")
+    (:sym :name "pipeline-format-spoken-tts" :kind :fn :tokens 3
+          :rationale "Formats structured code receipts into natural spoken sentences")
+    (:sym :name "render-terminal-sparkline" :kind :fn :tokens 3
+          :rationale "Renders Unicode acoustic sparkline HUD for terminal display")
   ])
