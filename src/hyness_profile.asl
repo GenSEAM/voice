@@ -16,7 +16,7 @@
 
 (dfs HynessPhoneticAlias
   (:f spoken Str "Spoken Cyrillic phonetic term e.g. асекс")
-  (:f maps-to Str "Authoritative English codebase symbol e.g. asex"))
+  (:f maps-to Str "Authoritative English codebase symbol e.g. genseam"))
 
 (dfs HynessHardwareEndpoint
   (:f kind Str "Endpoint category e.g. input, output, cdp, slm, hub")
@@ -47,7 +47,7 @@
 
 (df make-default-hyness-profile [] -> HynessProfile
   :d "Constructs default local Hyness profile with canonical monorepo aliases and endpoints"
-  (let [(a1 (make-phonetic-alias "асекс" "asex"))
+  (let [(a1 (make-phonetic-alias "асекс" "genseam"))
         (a2 (make-phonetic-alias "хайнесс" "hyness"))
         (a3 (make-phonetic-alias "шроуди" "shrody"))
         (a4 (make-phonetic-alias "датахаб" "datahub"))

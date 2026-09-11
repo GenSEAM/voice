@@ -137,7 +137,7 @@
         (dist1 (hn/levenshtein-distance "eddi" "eddy"))
         (dist2 (hn/levenshtein-distance "eddie" "eddy"))
         (t-upper (hn/transliterate-cyrillic "СХЕМА"))
-        (cands (list "asex" "scheka" "core"))
+        (cands (list "genseam" "scheka" "core"))
         (m1 (hn/match-heard-name "щека" cands 1))
         (m2 (hn/match-heard-name "щека" (list "completely-different") 1))]
     (do

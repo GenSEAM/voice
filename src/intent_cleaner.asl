@@ -61,7 +61,7 @@
         (t3 (string-replace t2 "датахаб" "datahub"))
         (t4 (string-replace t3 "дата хаб" "datahub"))
         (t5 (string-replace t4 "пцп" "pcp"))
-        (t6 (string-replace t5 "асекс" "asex"))
+        (t6 (string-replace t5 "асекс" "genseam"))
         (t7 (string-replace t6 "асл" "asl"))
         (t8 (string-replace t7 "гет " "git "))
         (t9 (string-replace t8 "пуш " "push "))
