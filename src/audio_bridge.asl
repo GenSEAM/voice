@@ -10,30 +10,30 @@
       is-quiet-edge-detected?
       drain-speech-window
       render-bridge-telemetry-asn]
-  :i [(core/strings :a s)])
+  :i [(asl-text/string :a s)])
 
 (dfs AudioBridgeConfig
-  (:f sample-rate Int64 "Audio sample rate in Hz e.g. 16000")
-  (:f frame-duration-ms Int64 "Duration of each PCM frame in milliseconds")
-  (:f ring-capacity-chunks Int64 "Maximum number of chunks retained in ring buffer")
-  (:f speech-energy-threshold Float "RMS energy threshold for speech activity"))
+  (:f sample-rate I64 "Audio sample rate in Hz e.g. 16000")
+  (:f frame-duration-ms I64 "Duration of each PCM frame in milliseconds")
+  (:f ring-capacity-chunks I64 "Maximum number of chunks retained in ring buffer")
+  (:f speech-energy-threshold F64 "RMS energy threshold for speech activity"))
 
 (dfs BridgeAudioChunk
   (:f chunk-id Str "Unique audio chunk identifier")
-  (:f samples-count Int64 "Number of samples in chunk")
-  (:f energy Float "RMS energy level")
+  (:f samples-count I64 "Number of samples in chunk")
+  (:f energy F64 "RMS energy level")
   (:f is-speech Bool "True if chunk energy exceeds speech threshold")
-  (:f timestamp-ms Int64 "Monotonic millisecond timestamp"))
+  (:f timestamp-ms I64 "Monotonic millisecond timestamp"))
 
 (dfs AudioBridgeState
   (:f config AudioBridgeConfig "Bridge operational parameters")
   (:f ring-chunks (List BridgeAudioChunk) "Retained circular buffer chunks")
   (:f is-recording Bool "Audio stream active flag")
-  (:f total-ingested-chunks Int64 "Lifetime ingested chunk counter")
-  (:f consecutive-speech-chunks Int64 "Counter of consecutive speech chunks")
-  (:f consecutive-silence-chunks Int64 "Counter of consecutive silence chunks"))
+  (:f total-ingested-chunks I64 "Lifetime ingested chunk counter")
+  (:f consecutive-speech-chunks I64 "Counter of consecutive speech chunks")
+  (:f consecutive-silence-chunks I64 "Counter of consecutive silence chunks"))
 
-(df make-audio-bridge-config [(sample-rate Int64) (frame-dur-ms Int64) (cap Int64) (threshold Float)] -> AudioBridgeConfig
+(df make-audio-bridge-config [(sample-rate I64) (frame-dur-ms I64) (cap I64) (threshold F64)] -> AudioBridgeConfig
   :d "Constructs AudioBridgeConfig record"
   (AudioBridgeConfig
     :sample-rate sample-rate
@@ -41,7 +41,7 @@
     :ring-capacity-chunks cap
     :speech-energy-threshold threshold))
 
-(df make-audio-chunk [(id Str) (samples Int64) (energy Float) (threshold Float) (ts Int64)] -> BridgeAudioChunk
+(df make-audio-chunk [(id Str) (samples I64) (energy F64) (threshold F64) (ts I64)] -> BridgeAudioChunk
   :d "Constructs BridgeAudioChunk with automated speech threshold classification"
   (BridgeAudioChunk
     :chunk-id id
@@ -80,7 +80,7 @@
       :consecutive-speech-chunks new-sp-run
       :consecutive-silence-chunks new-sil-run)))
 
-(df is-quiet-edge-detected? [(bridge AudioBridgeState) (silence-threshold-chunks Int64)] -> Bool
+(df is-quiet-edge-detected? [(bridge AudioBridgeState) (silence-threshold-chunks I64)] -> Bool
   :d "Determines if silence run has exceeded quiet-edge threshold while speech was previously observed"
   (and (>= (.-consecutive-silence-chunks bridge) silence-threshold-chunks)
        (> (.-total-ingested-chunks bridge) (.-consecutive-silence-chunks bridge))))

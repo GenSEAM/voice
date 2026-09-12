@@ -6,7 +6,7 @@
       repair-asr-slips
       strip-conversational-preamble
       clean-voice-intent]
-  :i [(core/strings :a s)])
+  :i [(asl-text/string :a s)])
 
 (dfs CleanedIntentResult
   (:f raw-input Str "Original speech transcript")
@@ -46,8 +46,8 @@
                       (fn [(acc (List Str)) (w Str)]
                         (if (list-empty? acc)
                           (list w)
-                          (let [(last-w (list-last acc))]
-                            (if (= (string-lower last-w) (string-lower w))
+                          (let [(last-w (option-or (list-last acc) ""))]
+                            (if (= last-w w)
                               acc
                               (list-append acc (list w))))))
                       (list)
@@ -63,9 +63,9 @@
         (t5 (string-replace t4 "пцп" "pcp"))
         (t6 (string-replace t5 "асекс" "genseam"))
         (t7 (string-replace t6 "асл" "asl"))
-        (t8 (string-replace t7 "гет " "git "))
-        (t9 (string-replace t8 "пуш " "push "))
-        (t10 (string-replace t9 "коммит " "commit "))
+        (t8 (string-replace t7 "гет" "git"))
+        (t9 (string-replace t8 "пуш" "push"))
+        (t10 (string-replace t9 "коммит" "commit"))
         (t11 (string-replace t10 "мердж " "merge "))
         (t12 (string-replace t11 "билд " "build "))
         (t13 (string-replace t12 "чекер " "checker "))
@@ -79,21 +79,21 @@
         (low (string-lower trimmed))]
     (cond
       ((string-starts-with? low "можешь пожалуйста ")
-       (string-slice trimmed 18 (string-length trimmed)))
+       (option-or (string-slice trimmed 18 (string-length trimmed)) ""))
       ((string-starts-with? low "пожалуйста ")
-       (string-slice trimmed 11 (string-length trimmed)))
+       (option-or (string-slice trimmed 11 (string-length trimmed)) ""))
       ((string-starts-with? low "я хочу чтобы ты ")
-       (string-slice trimmed 16 (string-length trimmed)))
+       (option-or (string-slice trimmed 16 (string-length trimmed)) ""))
       ((string-starts-with? low "сделай так чтобы ")
-       (string-slice trimmed 17 (string-length trimmed)))
+       (option-or (string-slice trimmed 17 (string-length trimmed)) ""))
       ((string-starts-with? low "could you please ")
-       (string-slice trimmed 17 (string-length trimmed)))
+       (option-or (string-slice trimmed 17 (string-length trimmed)) ""))
       ((string-starts-with? low "please ")
-       (string-slice trimmed 7 (string-length trimmed)))
+       (option-or (string-slice trimmed 7 (string-length trimmed)) ""))
       ((string-starts-with? low "i would like you to ")
-       (string-slice trimmed 20 (string-length trimmed)))
+       (option-or (string-slice trimmed 20 (string-length trimmed)) ""))
       ((string-starts-with? low "i want you to ")
-       (string-slice trimmed 14 (string-length trimmed)))
+       (option-or (string-slice trimmed 14 (string-length trimmed)) ""))
       (:else trimmed))))
 
 (df clean-voice-intent [(raw-transcript Str)] -> CleanedIntentResult

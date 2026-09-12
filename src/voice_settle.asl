@@ -5,7 +5,7 @@
       ingest-transcript-fragment
       step-settle-timer
       release-burst-now]
-  :i [(core/strings :a s)])
+  :i [(asl-text/string :a s)])
 
 (dfe SettleAction
   (:c hold-ongoing [] "Burst is accumulating speech fragments")
@@ -16,10 +16,10 @@
 
 (dfs BurstState
   (:f is-active Bool "True if currently buffering a speech burst")
-  (:f first-arrival-ms Int64 "Timestamp of first message in burst")
-  (:f last-arrival-ms Int64 "Timestamp of latest fragment in burst")
-  (:f due-at-ms Int64 "Timestamp when debounce timer will fire")
-  (:f message-count Int64 "Count of speech fragments merged")
+  (:f first-arrival-ms I64 "Timestamp of first message in burst")
+  (:f last-arrival-ms I64 "Timestamp of latest fragment in burst")
+  (:f due-at-ms I64 "Timestamp when debounce timer will fire")
+  (:f message-count I64 "Count of speech fragments merged")
   (:f accumulated-transcript Str "Merged utterance transcript text")
   (:f is-held Bool "External speaker hold flag"))
 
@@ -28,7 +28,7 @@
   (:f next-state BurstState "Updated burst buffer state")
   (:f should-dispatch Bool "True if burst should be dispatched to pipeline")
   (:f final-transcript Str "Dispatched transcript payload")
-  (:f held-duration-ms Int64 "Total duration burst was held in ms"))
+  (:f held-duration-ms I64 "Total duration burst was held in ms"))
 
 (df make-initial-burst-state [] -> BurstState
   :d "Constructs an idle burst buffer state"
@@ -41,7 +41,7 @@
     :accumulated-transcript ""
     :is-held false))
 
-(df ingest-transcript-fragment [(state BurstState) (fragment Str) (now-ms Int64) (settle-ms Int64) (max-hold-ms Int64)] -> BurstState
+(df ingest-transcript-fragment [(state BurstState) (fragment Str) (now-ms I64) (settle-ms I64) (max-hold-ms I64)] -> BurstState
   :d "Merges an incoming transcript fragment into the burst buffer and re-arms debounce deadline"
   (let [(clean (string-trim fragment))]
     (if (not (.-is-active state))
@@ -67,7 +67,7 @@
           :accumulated-transcript merged
           :is-held true)))))
 
-(df step-settle-timer [(state BurstState) (now-ms Int64) (max-hold-ms Int64)] -> SettleStepResult
+(df step-settle-timer [(state BurstState) (now-ms I64) (max-hold-ms I64)] -> SettleStepResult
   :d "Evaluates running burst state against deadlines and produces settle action"
   (if (not (.-is-active state))
     (SettleStepResult
@@ -103,7 +103,7 @@
            :final-transcript ""
            :held-duration-ms held-ms))))))
 
-(df release-burst-now [(state BurstState) (now-ms Int64)] -> SettleStepResult
+(df release-burst-now [(state BurstState) (now-ms I64)] -> SettleStepResult
   :d "Immediately releases any buffered burst transcript without waiting for timeouts"
   (if (not (.-is-active state))
     (SettleStepResult

@@ -6,27 +6,27 @@
       is-speech-frame is-speech-frame?
       step-vad trigger-barge-in
       detect-voice-activity slice-utterance-frames]
-  :i [(core/strings :a s)])
+  :i [(asl-text/string :a s)])
 
 (dfs VadConfig
-  (:f sample-rate Int64 "audio sample rate in Hz e.g. 16000")
-  (:f frame-size Int64 "number of samples per evaluation frame e.g. 160 or 320")
-  (:f energy-threshold Float "energy cutoff below which frame is silence")
-  (:f zcr-threshold Float "zero-crossing rate threshold")
-  (:f hangover-frames Int64 "number of silence frames before marking speech end"))
+  (:f sample-rate I64 "audio sample rate in Hz e.g. 16000")
+  (:f frame-size I64 "number of samples per evaluation frame e.g. 160 or 320")
+  (:f energy-threshold F64 "energy cutoff below which frame is silence")
+  (:f zcr-threshold F64 "zero-crossing rate threshold")
+  (:f hangover-frames I64 "number of silence frames before marking speech end"))
 
 (dfs VadState
   (:f is-speech Bool "true if currently within a speech burst")
-  (:f consecutive-speech Int64 "count of continuous speech frames")
-  (:f consecutive-silence Int64 "count of continuous silence frames")
-  (:f current-energy Float "last evaluated frame energy"))
+  (:f consecutive-speech I64 "count of continuous speech frames")
+  (:f consecutive-silence I64 "count of continuous silence frames")
+  (:f current-energy F64 "last evaluated frame energy"))
 
 (dfs BargeInEvent
   (:f target-agent Str "agent whose audio output is being interrupted")
-  (:f timestamp Int64 "epoch timestamp of interrupt event")
-  (:f cutoff-latency-ms Float "measured interrupt detection latency in ms"))
+  (:f timestamp I64 "epoch timestamp of interrupt event")
+  (:f cutoff-latency-ms F64 "measured interrupt detection latency in ms"))
 
-(df make-vad-config [(sample-rate Int64)] -> VadConfig
+(df make-vad-config [(sample-rate I64)] -> VadConfig
   :d "Creates standard VAD configuration for voice assistant"
   (VadConfig
     :sample-rate sample-rate
@@ -43,23 +43,23 @@
     :consecutive-silence 0
     :current-energy 0.0))
 
-(df compute-energy [(samples (List Float))] -> Float
+(df compute-energy [(samples (List F64))] -> F64
   :d "Calculates root-mean-square audio frame energy level"
   (if (list-empty? samples)
       0.0
-      (let [(sum (list-fold (fn [(acc Float) (s Float)] (+ acc (* s s))) 0.0 samples))
+      (let [(sum (list-fold (fn [(acc F64) (s F64)] (+ acc (* s s))) 0.0 samples))
             (n (list-length samples))]
-        (if (> n 0) (/ sum (float n)) 0.0))))
+        (if (> n 0) (/ sum (as-f64 n)) 0.0))))
 
-(df is-speech-frame [(energy Float) (threshold Float)] -> Bool
+(df is-speech-frame [(energy F64) (threshold F64)] -> Bool
   :d "Evaluates whether frame energy exceeds speech threshold"
   (> energy threshold))
 
-(df is-speech-frame? [(energy Float) (threshold Float)] -> Bool
+(df is-speech-frame? [(energy F64) (threshold F64)] -> Bool
   :d "Evaluates whether frame energy exceeds speech threshold"
   (> energy threshold))
 
-(df zcr-count-helper [(prev Float) (rest (List Float)) (count Int64)] -> Int64
+(df zcr-count-helper [(prev F64) (rest (List F64)) (count I64)] -> I64
   :d "Recursive helper counting zero crossings between adjacent samples"
   (if (list-empty? rest)
     count
@@ -70,7 +70,7 @@
           (new-count (if cross? (+ count 1) count))]
       (zcr-count-helper curr tail new-count))))
 
-(df compute-zcr [(samples (List Float))] -> Float
+(df compute-zcr [(samples (List F64))] -> F64
   :d "Calculates zero-crossing rate of PCM audio samples"
   (let [(n (list-length samples))]
     (if (<= n 1)
@@ -80,14 +80,14 @@
             (crossings (zcr-count-helper h t 0))]
         (/ (int64-to-float64 crossings) (int64-to-float64 (- n 1)))))))
 
-(df detect-voice-activity [(samples (List Float)) (cfg VadConfig)] -> Bool
+(df detect-voice-activity [(samples (List F64)) (cfg VadConfig)] -> Bool
   :d "Detects active voice in audio frame by evaluating RMS energy against threshold"
   (if (list-empty? samples)
     false
     (let [(energy (compute-energy samples))]
       (is-speech-frame? energy (.-energy-threshold cfg)))))
 
-(df step-vad [(cfg VadConfig) (st VadState) (frame-energy Float)] -> VadState
+(df step-vad [(cfg VadConfig) (st VadState) (frame-energy F64)] -> VadState
   :d "Transitions VAD state given new frame energy and hangover logic"
   (let [(speech? (is-speech-frame? frame-energy (.-energy-threshold cfg)))]
     (if speech?
@@ -104,7 +104,7 @@
             :consecutive-silence silence-count
             :current-energy frame-energy)))))
 
-(df slice-frames-helper [(frames (List (List Float))) (cfg VadConfig) (st VadState) (acc (List (List Float)))] -> (List (List Float))
+(df slice-frames-helper [(frames (List (List F64))) (cfg VadConfig) (st VadState) (acc (List (List F64)))] -> (List (List F64))
   :d "Recursive helper tracking VAD state across frames and accumulating active utterance frames"
   (if (list-empty? frames)
     acc
@@ -117,11 +117,11 @@
                       acc))]
       (slice-frames-helper rest cfg next-st next-acc))))
 
-(df slice-utterance-frames [(frames (List (List Float))) (cfg VadConfig)] -> (List (List Float))
+(df slice-utterance-frames [(frames (List (List F64))) (cfg VadConfig)] -> (List (List F64))
   :d "Slices contiguous utterance audio frames using VAD state machine and hangover frames"
   (slice-frames-helper frames cfg (make-initial-vad-state) (list)))
 
-(df trigger-barge-in [(agent-id Str) (timestamp Int64) (latency-ms Float)] -> BargeInEvent
+(df trigger-barge-in [(agent-id Str) (timestamp I64) (latency-ms F64)] -> BargeInEvent
   :d "Constructs immediate barge-in interruption record"
   (BargeInEvent
     :target-agent agent-id

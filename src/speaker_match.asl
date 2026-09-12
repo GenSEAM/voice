@@ -11,16 +11,16 @@
 (dfs SpeakerProfile
   (:f speaker-id Str "unique identifier for enrolled speaker")
   (:f name Str "human readable display name")
-  (:f embedding (List Float) "normalized acoustic feature vector")
-  (:f threshold Float "minimum cosine similarity threshold for acceptance"))
+  (:f embedding (List F64) "normalized acoustic feature vector")
+  (:f threshold F64 "minimum cosine similarity threshold for acceptance"))
 
 (dfs SpeakerMatchResult
   (:f matched Bool "true if confidence score meets or exceeds threshold")
   (:f speaker-id Str "speaker identifier from candidate profile")
-  (:f confidence Float "cosine similarity score between minus one and one")
-  (:f distance Float "cosine distance one minus confidence"))
+  (:f confidence F64 "cosine similarity score between minus one and one")
+  (:f distance F64 "cosine distance one minus confidence"))
 
-(df sqrt-approx [(x Float)] -> Float
+(df sqrt-approx [(x F64)] -> F64
   :d "Computes square root approximation using Newton-Raphson"
   (if (<= x 0.0)
     0.0
@@ -32,7 +32,7 @@
           (g5 (/ (+ g4 (/ x g4)) 2.0))]
       g5)))
 
-(df dot-product [(a (List Float)) (b (List Float))] -> Float
+(df dot-product [(a (List F64)) (b (List F64))] -> F64
   :d "Computes inner dot product between two float vectors"
   (if (or (list-empty? a) (list-empty? b))
     0.0
@@ -42,7 +42,7 @@
           (tb (option-or (list-tail b) (list)))]
       (+ (* ha hb) (dot-product ta tb)))))
 
-(df norm-sq [(v (List Float))] -> Float
+(df norm-sq [(v (List F64))] -> F64
   :d "Computes sum of squares of elements in a float list"
   (if (list-empty? v)
     0.0
@@ -50,7 +50,7 @@
           (t (option-or (list-tail v) (list)))]
       (+ (* h h) (norm-sq t)))))
 
-(df cosine-similarity [(vec-a (List Float)) (vec-b (List Float))] -> Float
+(df cosine-similarity [(vec-a (List F64)) (vec-b (List F64))] -> F64
   :d "Computes cosine similarity between two float vectors clamped to -1.0 to 1.0"
   (let [(na (sqrt-approx (norm-sq vec-a)))
         (nb (sqrt-approx (norm-sq vec-b)))
@@ -65,7 +65,7 @@
             -1.0
             sim))))))
 
-(df make-speaker-profile [(speaker-id Str) (name Str) (embedding (List Float)) (threshold Float)] -> SpeakerProfile
+(df make-speaker-profile [(speaker-id Str) (name Str) (embedding (List F64)) (threshold F64)] -> SpeakerProfile
   :d "Constructs an enrolled speaker profile"
   (SpeakerProfile
     :speaker-id speaker-id
@@ -73,7 +73,7 @@
     :embedding embedding
     :threshold threshold))
 
-(df verify-speaker [(profile SpeakerProfile) (input-embedding (List Float))] -> SpeakerMatchResult
+(df verify-speaker [(profile SpeakerProfile) (input-embedding (List F64))] -> SpeakerMatchResult
   :d "Verifies input embedding against speaker profile using cosine similarity"
   (let [(conf (cosine-similarity (.-embedding profile) input-embedding))
         (thresh (.-threshold profile))
@@ -85,13 +85,13 @@
       :confidence conf
       :distance dist)))
 
-(df drop-samples [(lst (List Float)) (n Int64)] -> (List Float)
+(df drop-samples [(lst (List F64)) (n I64)] -> (List F64)
   :d "Drops n samples from list head"
   (if (or (<= n 0) (list-empty? lst))
     lst
     (drop-samples (option-or (list-tail lst) (list)) (- n 1))))
 
-(df compute-bin-energy [(samples (List Float)) (count Int64)] -> Float
+(df compute-bin-energy [(samples (List F64)) (count I64)] -> F64
   :d "Computes sum of squares of first n samples"
   (if (or (<= count 0) (list-empty? samples))
     0.0
@@ -99,7 +99,7 @@
           (t (option-or (list-tail samples) (list)))]
       (+ (* h h) (compute-bin-energy t (- count 1))))))
 
-(df extract-filterbank-bins [(samples (List Float)) (bins-remaining Int64) (bin-size Int64)] -> (List Float)
+(df extract-filterbank-bins [(samples (List F64)) (bins-remaining I64) (bin-size I64)] -> (List F64)
   :d "Recursively constructs spectral energy bins"
   (if (<= bins-remaining 0)
     (list)
@@ -108,7 +108,7 @@
           (next-samples (drop-samples samples bin-size))]
       (list-cons norm-val (extract-filterbank-bins next-samples (- bins-remaining 1) bin-size)))))
 
-(df extract-mel-features [(samples (List Float))] -> (List Float)
+(df extract-mel-features [(samples (List F64))] -> (List F64)
   :d "Extracts 16-channel spectral energy distribution from input audio samples"
   (let [(total (list-length samples))
         (bin-size (if (< total 16) 1 (/ total 16)))]

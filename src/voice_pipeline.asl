@@ -22,31 +22,31 @@
   (:f delivery-mode Str "Audio delivery adapter: browser or terminal-tui")
   (:f open-router-model Str "Remote cloud reasoning fallback model")
   (:f tts-voice-id Str "Synthesized speech profile identifier")
-  (:f min-speech-frames Int64 "Consecutive speech frames required for activation")
-  (:f silence-hangover-frames Int64 "Consecutive silence frames before settling utterance"))
+  (:f min-speech-frames I64 "Consecutive speech frames required for activation")
+  (:f silence-hangover-frames I64 "Consecutive silence frames before settling utterance"))
 
 (dfs VoicePipelineState
   (:f vad-st vad/VadState "Internal VAD state machine")
   (:f noise-st rn/NoiseAdvisorState "Running ambient noise floor state")
   (:f preroll af/PreRollBuffer "Circular 150ms audio pre-roll buffer")
   (:f is-utterance-active Bool "True when actively accumulating voiced speech")
-  (:f utterance-frames-count Int64 "Count of frames in active utterance")
-  (:f utterance-samples (List Float) "Accumulated PCM audio samples for speaker Mel matching")
+  (:f utterance-frames-count I64 "Count of frames in active utterance")
+  (:f utterance-samples (List F64) "Accumulated PCM audio samples for speaker Mel matching")
   (:f speaker-checked Bool "True if speculative voice ID evaluation has completed")
   (:f speaker-verified Bool "True if speaker matches authorized profile")
-  (:f speaker-confidence Float "Cosine confidence score of speaker match")
-  (:f frames-total Int64 "Monotonic count of processed audio frames")
-  (:f noise-frames-skipped Int64 "Count of ambient noise frames discarded")
-  (:f speech-frames-collected Int64 "Count of voiced speech frames ingested")
+  (:f speaker-confidence F64 "Cosine confidence score of speaker match")
+  (:f frames-total I64 "Monotonic count of processed audio frames")
+  (:f noise-frames-skipped I64 "Count of ambient noise frames discarded")
+  (:f speech-frames-collected I64 "Count of voiced speech frames ingested")
   (:f active-tts-playing Bool "True when audio synthesis playback is active"))
 
 (dfs VoicePipelineResult
   (:f next-state VoicePipelineState "Updated pipeline state")
   (:f action-kind Str "Step classification: noise-skipped, collecting-speech, speculative-verified, speculative-rejected, utterance-settled, barge-in")
-  (:f db-level Float "Decibel level of processed frame")
+  (:f db-level F64 "Decibel level of processed frame")
   (:f is-speech Bool "Voiced speech indicator")
   (:f speaker-matched Bool "Speaker verification verdict")
-  (:f speaker-confidence Float "Cosine similarity score")
+  (:f speaker-confidence F64 "Cosine similarity score")
   (:f transcript Str "Transcribed natural speech or fast-path command")
   (:f tts-output Str "Synthesized spoken text response")
   (:f terminal-hud Str "Unicode acoustic sparkline HUD"))
@@ -80,7 +80,7 @@
     :speech-frames-collected 0
     :active-tts-playing false))
 
-(df render-terminal-sparkline [(db Float) (is-speech Bool)] -> Str
+(df render-terminal-sparkline [(db F64) (is-speech Bool)] -> Str
   :d "Renders Unicode sparklines and decibel HUD for terminal UI delivery"
   (let [(glyph (if (< db -60.0) " "
                  (if (< db -50.0) "▂"
@@ -117,7 +117,7 @@
         "Executing full seven-tier verification gate across all packages."
         technical-text))))
 
-(df pipeline-step-frame [(cfg VoicePipelineConfig) (st VoicePipelineState) (frame af/AudioFrame) (frame-samples (List Float))] -> VoicePipelineResult
+(df pipeline-step-frame [(cfg VoicePipelineConfig) (st VoicePipelineState) (frame af/AudioFrame) (frame-samples (List F64))] -> VoicePipelineResult
   :d "Processes a single 30ms AudioFrame through acoustic floor, speculative Voice ID, and delivery dispatch"
   (let [(db (.-db-level frame))
         (is-speech (.-is-speech frame))

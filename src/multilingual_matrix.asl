@@ -4,7 +4,7 @@
       detect-language-dialect
       make-multilingual-config
       resolve-speech-engine]
-  :i [(core/strings :a s)])
+  :i [(asl-text/string :a s)])
 
 (dfe LocaleDialect
   (:c locale-en-primary [] "International English primary with standard technical vocabulary")
@@ -24,7 +24,7 @@
   (:f detected-dialect LocaleDialect "Evaluated language dialect")
   (:f has-cyrillic Bool "True if Cyrillic code points are present")
   (:f has-latin-code-tokens Bool "True if Latin technical tokens are present")
-  (:f confidence Float "Detection confidence score"))
+  (:f confidence F64 "Detection confidence score"))
 
 (df contains-cyrillic? [(text Str)] -> Bool
   :d "Detects if text contains Cyrillic characters"

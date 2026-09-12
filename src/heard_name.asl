@@ -10,13 +10,13 @@
   (:f raw-input Str "raw phonetic input string")
   (:f transliterated Str "Latin-transliterated representation")
   (:f matched-target Str "closest matching candidate project name")
-  (:f levenshtein-distance Int64 "computed edit distance")
-  (:f score Float "normalized similarity score")
+  (:f levenshtein-distance I64 "computed edit distance")
+  (:f score F64 "normalized similarity score")
   (:f is-match Bool "true if edit distance is within configured tolerance"))
 
 (dfs CandidateBest
   (:f target Str "best target candidate string")
-  (:f dist Int64 "minimum edit distance found"))
+  (:f dist I64 "minimum edit distance found"))
 
 (df transliterate-cyrillic [(text Str)] -> Str
   :d "Transliterates Cyrillic text to Latin using greedy longest-digraph substitution"
@@ -56,13 +56,13 @@
         (t33 (string-replace t32 "ь" ""))]
     t33))
 
-(df make-initial-row [(target-len Int64) (curr Int64)] -> (List Int64)
+(df make-initial-row [(target-len I64) (curr I64)] -> (List I64)
   :d "Builds initial 0..len row for DP table"
   (if (> curr target-len)
     (list)
     (list-cons curr (make-initial-row target-len (+ curr 1)))))
 
-(df compute-dp-cell [(c1 Str) (c2-list (List Str)) (prev-left Int64) (prev-tail (List Int64)) (curr-left Int64)] -> (List Int64)
+(df compute-dp-cell [(c1 Str) (c2-list (List Str)) (prev-left I64) (prev-tail (List I64)) (curr-left I64)] -> (List I64)
   :d "Computes single DP row given previous row values and current row left neighbor"
   (if (list-empty? c2-list)
     (list)
@@ -77,13 +77,13 @@
           (cell (min ins (min del sub)))]
       (list-cons cell (compute-dp-cell c1 c2-tail prev-above next-prev-tail cell)))))
 
-(df compute-dp-row [(c1 Str) (s2-chars (List Str)) (prev-row (List Int64)) (row-idx Int64)] -> (List Int64)
+(df compute-dp-row [(c1 Str) (s2-chars (List Str)) (prev-row (List I64)) (row-idx I64)] -> (List I64)
   :d "Computes new DP row starting from row index"
   (let [(p0 (option-or (list-head prev-row) 0))
         (p-tail (option-or (list-tail prev-row) (list)))]
     (list-cons row-idx (compute-dp-cell c1 s2-chars p0 p-tail row-idx))))
 
-(df run-levenshtein-dp [(s1-chars (List Str)) (s2-chars (List Str)) (prev-row (List Int64)) (row-idx Int64)] -> (List Int64)
+(df run-levenshtein-dp [(s1-chars (List Str)) (s2-chars (List Str)) (prev-row (List I64)) (row-idx I64)] -> (List I64)
   :d "Folds characters of s1 producing final DP row"
   (if (list-empty? s1-chars)
     prev-row
@@ -92,7 +92,7 @@
           (next-row (compute-dp-row c1 s2-chars prev-row row-idx))]
       (run-levenshtein-dp s1-tail s2-chars next-row (+ row-idx 1)))))
 
-(df get-last-element [(lst (List Int64))] -> Int64
+(df get-last-element [(lst (List I64))] -> I64
   :d "Returns the last element of a non-empty list of integers"
   (if (list-empty? lst)
     0
@@ -101,7 +101,7 @@
         (option-or (list-head lst) 0)
         (get-last-element t)))))
 
-(df levenshtein-distance [(s1 Str) (s2 Str)] -> Int64
+(df levenshtein-distance [(s1 Str) (s2 Str)] -> I64
   :d "Computes standard character-level edit distance between two strings"
   (let [(c1 (string-chars s1))
         (c2 (string-chars s2))
@@ -121,7 +121,7 @@
         (find-best-match trans tail-cand (CandidateBest :target cand :dist d))
         (find-best-match trans tail-cand curr-best)))))
 
-(df match-heard-name [(raw-heard Str) (candidates (List Str)) (max-distance Int64)] -> NameMatch
+(df match-heard-name [(raw-heard Str) (candidates (List Str)) (max-distance I64)] -> NameMatch
   :d "Transliterates raw input and matches against candidate list within tolerance"
   (let [(trans (transliterate-cyrillic raw-heard))
         (init (CandidateBest :target "" :dist 999999))

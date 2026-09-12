@@ -8,20 +8,20 @@
   :i [])
 
 (dfs NoiseAdvisorConfig
-  (:f noisy-threshold-db Float "noisy alert trigger threshold in dB e.g. -45.0")
-  (:f quiet-threshold-db Float "noisy alert clear threshold in dB e.g. -50.0")
-  (:f min-floor-db Float "minimum clamped floor bound in dB e.g. -70.0")
-  (:f max-floor-db Float "maximum clamped floor bound in dB e.g. -25.0")
-  (:f dwell-frames Int64 "minimum consecutive frames required to transition state"))
+  (:f noisy-threshold-db F64 "noisy alert trigger threshold in dB e.g. -45.0")
+  (:f quiet-threshold-db F64 "noisy alert clear threshold in dB e.g. -50.0")
+  (:f min-floor-db F64 "minimum clamped floor bound in dB e.g. -70.0")
+  (:f max-floor-db F64 "maximum clamped floor bound in dB e.g. -25.0")
+  (:f dwell-frames I64 "minimum consecutive frames required to transition state"))
 
 (dfs NoiseAdvisorState
-  (:f current-floor-db Float "current estimated ambient noise floor in dB")
+  (:f current-floor-db F64 "current estimated ambient noise floor in dB")
   (:f is-noisy Bool "true if currently in noisy room alert state")
-  (:f persistence-count Int64 "count of consecutive frames matching candidate transition")
+  (:f persistence-count I64 "count of consecutive frames matching candidate transition")
   (:f advice-code Str "categorical advice code OK, ROOM_TOO_NOISY, MIC_MUTED_OR_DEAD")
   (:f advice-message Str "human readable acoustic explanation"))
 
-(df clamp-floor [(val Float) (min-db Float) (max-db Float)] -> Float
+(df clamp-floor [(val F64) (min-db F64) (max-db F64)] -> F64
   :d "Clamps noise floor between min and max bounds"
   (if (< val min-db)
     min-db
@@ -29,12 +29,12 @@
       max-db
       val)))
 
-(df update-running-floor [(curr Float) (frame-db Float) (min-db Float) (max-db Float)] -> Float
+(df update-running-floor [(curr F64) (frame-db F64) (min-db F64) (max-db F64)] -> F64
   :d "Smooths noise floor estimate using exponential moving average clamped to range"
   (let [(raw (+ (* curr 0.95) (* frame-db 0.05)))]
     (clamp-floor raw min-db max-db)))
 
-(df make-noise-advisor [(noisy-db Float) (quiet-db Float)] -> NoiseAdvisorConfig
+(df make-noise-advisor [(noisy-db F64) (quiet-db F64)] -> NoiseAdvisorConfig
   :d "Instantiates noise advisor configuration with dual hysteresis thresholds"
   (NoiseAdvisorConfig
     :noisy-threshold-db noisy-db
@@ -52,7 +52,7 @@
     :advice-code "OK"
     :advice-message "Room acoustic environment is optimal"))
 
-(df compute-noise-advice [(cfg NoiseAdvisorConfig) (st NoiseAdvisorState) (frame-db Float)] -> NoiseAdvisorState
+(df compute-noise-advice [(cfg NoiseAdvisorConfig) (st NoiseAdvisorState) (frame-db F64)] -> NoiseAdvisorState
   :d "Transitions advisor state given current frame level using dual-threshold hysteresis"
   (let [(min-floor (.-min-floor-db cfg))
         (max-floor (.-max-floor-db cfg))

@@ -15,7 +15,7 @@
       pipeline-paraphrase-intent
       pipeline-format-spoken-tts
       render-terminal-sparkline]
-  :i [(core/strings :a s)
+  :i [(asl-text/string :a s)
       (voice_pipeline :a vp)
       (speaker_match :a sm)
       (audio_frame :a af)])
@@ -28,16 +28,16 @@
 (dfs AudioChunk
   (:f id String "chunk id")
   (:f format AudioFormat "audio format")
-  (:f sample-rate Int64 "sample rate")
-  (:f byte-length Int64 "byte length")
-  (:f timestamp Int64 "timestamp"))
+  (:f sample-rate I64 "sample rate")
+  (:f byte-length I64 "byte length")
+  (:f timestamp I64 "timestamp"))
 
 (dfs VoiceFrame
   (:f chunk-id String "chunk id")
   (:f transcript String "transcript")
   (:f is-final Bool "is final flag")
-  (:f confidence Float "confidence score")
-  (:f latency-ms Float "latency in ms"))
+  (:f confidence F64 "confidence score")
+  (:f latency-ms F64 "latency in ms"))
 
 (dfs VoiceIntent
   (:f intent-name String "intent name")
@@ -61,7 +61,7 @@
   :d "Constructs clean initial voice pipeline state"
   (vp/make-initial-voice-pipeline-state))
 
-(df pipeline-step-frame [(cfg vp/VoicePipelineConfig) (st vp/VoicePipelineState) (frame af/AudioFrame) (frame-samples (List Float))] -> vp/VoicePipelineResult
+(df pipeline-step-frame [(cfg vp/VoicePipelineConfig) (st vp/VoicePipelineState) (frame af/AudioFrame) (frame-samples (List F64))] -> vp/VoicePipelineResult
   :d "Delegates frame processing step to voice_pipeline"
   (vp/pipeline-step-frame cfg st frame frame-samples))
 
@@ -73,6 +73,6 @@
   :d "Delegates spoken TTS text formatting to voice_pipeline"
   (vp/pipeline-format-spoken-tts technical-text))
 
-(df render-terminal-sparkline [(db Float) (is-speech Bool)] -> Str
+(df render-terminal-sparkline [(db F64) (is-speech Bool)] -> Str
   :d "Delegates sparkline HUD rendering to voice_pipeline"
   (vp/render-terminal-sparkline db is-speech))

@@ -13,18 +13,18 @@
       (speaker_match :a sm)
       (voice_pipeline :a vp)])
 
-(df make-constant-samples [(n Int64) (val Float)] -> (List Float)
+(df make-constant-samples [(n I64) (val F64)] -> (List F64)
   :d "Generates a list of n identical float samples"
   (if (<= n 0)
     (list)
     (list-cons val (make-constant-samples (- n 1) val))))
 
-(df make-test-speaker [(speaker-id Str) (threshold Float)] -> sm/SpeakerProfile
+(df make-test-speaker [(speaker-id Str) (threshold F64)] -> sm/SpeakerProfile
   :d "Constructs an enrolled speaker profile with uniform 16-channel embedding"
   (let [(emb (make-constant-samples 16 0.25))]
     (sm/make-speaker-profile speaker-id "Alice" emb threshold)))
 
-(df make-pipeline-test-frame [(id Str) (db Float) (is-speech Bool)] -> af/AudioFrame
+(df make-pipeline-test-frame [(id Str) (db F64) (is-speech Bool)] -> af/AudioFrame
   :d "Constructs an audio frame fixture for pipeline testing"
   (af/AudioFrame
     :frame-id id

@@ -73,12 +73,13 @@
     (assert (= (.-secondary-locale prof) "ru") "secondary locale is ru")
     (assert (.-is-mixed-mode prof) "mixed mode enabled")
     (assert (= (hp/resolve-hyness-alias prof "асекс") "genseam") "resolves асекс to asex")
-    (assert (= (hp/resolve-hyness-alias prof "хайнесс") "hyness") "resolves хайнесс to hyness")
+    (assert (= (hp/resolve-hyness-alias prof "хайнесс") "harness") "resolves хайнесс to harness")
+    (assert (= (hp/resolve-hyness-alias prof "ханес") "harness") "resolves ханес to harness")
     (assert (= (hp/resolve-hyness-alias prof "шроуди") "shrody") "resolves шроуди to shrody")
     (assert (= (hp/resolve-hyness-alias prof "unknown") "unknown") "preserves unmapped word")
     (let [(normalized (hp/apply-hyness-aliases prof "запусти асекс в хайнесс и проверь шроуди"))]
       (assert (string-contains? normalized "genseam") "replaces асекс with asex")
-      (assert (string-contains? normalized "hyness") "replaces хайнесс with hyness")
+      (assert (string-contains? normalized "harness") "replaces хайнесс with harness")
       (assert (string-contains? normalized "shrody") "replaces шроуди with shrody"))
     true))
 
@@ -95,7 +96,7 @@
     (assert (string-contains? hub-ep "~/.asl/run/hub.sock") "hub endpoint resolved")
     (assert (= none-ep "") "empty string for unknown endpoint")
     (assert (string-contains? prof-asn ":name \"hyness-workstation\"") "profile ASN contains name")
-    (assert (string-contains? prof-asn ":alias-count 5") "profile ASN reflects 5 aliases")
+    (assert (string-contains? prof-asn ":alias-count 6") "profile ASN reflects 6 aliases")
     (assert (string-contains? bridge-asn ":audio-bridge") "bridge telemetry contains tag")
     true))
 

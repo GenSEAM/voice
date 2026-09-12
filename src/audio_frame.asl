@@ -5,20 +5,20 @@
 
 (dfs AudioFrame
   (:f frame-id Str "Unique identifier for audio frame")
-  (:f samples-count Int64 "Number of samples in frame")
-  (:f duration-ms Int64 "Frame duration in milliseconds")
-  (:f rms-energy Float "Root-mean-square energy level")
-  (:f db-level Float "Clamped decibel level relative to full scale")
+  (:f samples-count I64 "Number of samples in frame")
+  (:f duration-ms I64 "Frame duration in milliseconds")
+  (:f rms-energy F64 "Root-mean-square energy level")
+  (:f db-level F64 "Clamped decibel level relative to full scale")
   (:f is-speech Bool "Boolean flag indicating speech activity")
-  (:f timestamp-ms Int64 "Monotonic millisecond timestamp"))
+  (:f timestamp-ms I64 "Monotonic millisecond timestamp"))
 
 (dfs PreRollBuffer
-  (:f capacity Int64 "Maximum buffer frame capacity")
+  (:f capacity I64 "Maximum buffer frame capacity")
   (:f frames (List AudioFrame) "Ordered list of retained audio frames")
-  (:f count Int64 "Current number of stored frames")
-  (:f head Int64 "Circular write index"))
+  (:f count I64 "Current number of stored frames")
+  (:f head I64 "Circular write index"))
 
-(df sqrt-fast [(x Float)] -> Float
+(df sqrt-fast [(x F64)] -> F64
   :d "Newton-Raphson square root approximation"
   (if (<= x 0.0)
       0.0
@@ -29,7 +29,7 @@
             (g4 (/ (+ g3 (/ x g3)) 2.0))]
         (/ (+ g4 (/ x g4)) 2.0))))
 
-(df sum-sq-helper [(samples (List Float)) (acc Float)] -> Float
+(df sum-sq-helper [(samples (List F64)) (acc F64)] -> F64
   :d "Helper computing sum of squared PCM samples"
   (if (list-empty? samples)
       acc
@@ -37,7 +37,7 @@
             (t (option-or (list-tail samples) (list)))]
         (sum-sq-helper t (+ acc (* h h))))))
 
-(df compute-frame-energy [(samples (List Float))] -> Float
+(df compute-frame-energy [(samples (List F64))] -> F64
   :d "Computes root-mean-square energy over PCM sample list"
   (let [(n (list-length samples))]
     (if (<= n 0)
@@ -46,7 +46,7 @@
               (mean-sq (/ sum-sq (int64-to-float64 n)))]
           (sqrt-fast mean-sq)))))
 
-(df db-norm [(x Float)] -> Float
+(df db-norm [(x F64)] -> F64
   :d "Evaluates log10 polynomial on normalized float in [0.316, 1.0]"
   (let [(t (/ (- x 1.0) (+ x 1.0)))
         (t2 (* t t))
@@ -54,7 +54,7 @@
         (ln-x (* 2.0 (* t s)))]
     (* 8.6858896 ln-x)))
 
-(df compute-db-level [(energy Float)] -> Float
+(df compute-db-level [(energy F64)] -> F64
   :d "Converts RMS energy to decibels relative to full scale, clamped to [-70.0, 0.0]"
   (cond
     ((<= energy 0.000316227766) -70.0)
@@ -79,7 +79,7 @@
          (+ -10.0 (db-norm (* energy 3.16227766)))
          (db-norm energy)))))
 
-(df make-audio-frame [(frame-id Str) (samples (List Float)) (speech-threshold Float) (timestamp-ms Int64)] -> AudioFrame
+(df make-audio-frame [(frame-id Str) (samples (List F64)) (speech-threshold F64) (timestamp-ms I64)] -> AudioFrame
   :d "Instantiates AudioFrame calculating RMS energy, clamped dB level, and speech flag comparison"
   (let [(cnt (list-length samples))
         (rms (compute-frame-energy samples))
@@ -96,7 +96,7 @@
       :is-speech speech?
       :timestamp-ms timestamp-ms)))
 
-(df make-preroll-buffer [(capacity Int64)] -> PreRollBuffer
+(df make-preroll-buffer [(capacity I64)] -> PreRollBuffer
   :d "Constructs an empty pre-roll ring buffer with designated capacity"
   (PreRollBuffer
     :capacity capacity
@@ -126,7 +126,7 @@
   :d "Flushes all preserved pre-trigger onset frames in chronological order"
   (.-frames buf))
 
-(df track-noise-floor [(current-floor-db Float) (frame-db Float) (is-speech Bool)] -> Float
+(df track-noise-floor [(current-floor-db F64) (frame-db F64) (is-speech Bool)] -> F64
   :d "Updates running background noise floor when is-speech is false; freezes when true; clamps to [-70.0, -25.0]"
   (if is-speech
       (if (< current-floor-db -70.0)

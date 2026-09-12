@@ -11,7 +11,7 @@
     (if (string-empty? trimmed)
       false
       (if (and (string-starts-with? trimmed "(") (string-ends-with? trimmed ")"))
-        (let [(bal (fold (fn [(acc Int64) (ch String)] (if (< acc 0) -999 (if (= ch "(") (+ acc 1) (if (= ch ")") (- acc 1) acc)))) 0 (string-chars trimmed)))]
+        (let [(bal (fold (fn [(acc I64) (ch String)] (if (< acc 0) -999 (if (= ch "(") (+ acc 1) (if (= ch ")") (- acc 1) acc)))) 0 (string-chars trimmed)))]
           (= bal 0))
         false))))
 

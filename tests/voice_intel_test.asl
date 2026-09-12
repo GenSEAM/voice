@@ -12,13 +12,13 @@
       (speaker_match :a sm)
       (heard_name :a hn)])
 
-(df make-samples [(n Int64) (val Float)] -> (List Float)
+(df make-samples [(n I64) (val F64)] -> (List F64)
   :d "Generates a list of n identical float samples"
   (if (<= n 0)
     (list)
     (list-cons val (make-samples (- n 1) val))))
 
-(df make-dummy-frame [(idx Int64)] -> af/AudioFrame
+(df make-dummy-frame [(idx I64)] -> af/AudioFrame
   :d "Constructs a test AudioFrame with distinct frame ID"
   (af/AudioFrame
     :frame-id (string-append "f-" (string-from-int64 idx))

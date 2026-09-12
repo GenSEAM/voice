@@ -12,7 +12,7 @@
       apply-hyness-aliases
       find-endpoint-by-kind
       format-hyness-profile-asn]
-  :i [(core/strings :a s)])
+  :i [(asl-text/string :a s)])
 
 (dfs HynessPhoneticAlias
   (:f spoken Str "Spoken Cyrillic phonetic term e.g. асекс")
@@ -48,11 +48,12 @@
 (df make-default-hyness-profile [] -> HynessProfile
   :d "Constructs default local Hyness profile with canonical monorepo aliases and endpoints"
   (let [(a1 (make-phonetic-alias "асекс" "genseam"))
-        (a2 (make-phonetic-alias "хайнесс" "hyness"))
+        (a2 (make-phonetic-alias "хайнесс" "harness"))
         (a3 (make-phonetic-alias "шроуди" "shrody"))
         (a4 (make-phonetic-alias "датахаб" "datahub"))
         (a5 (make-phonetic-alias "пцп" "pcp"))
-        (aliases (list a1 a2 a3 a4 a5))
+        (a6 (make-phonetic-alias "ханес" "harness"))
+        (aliases (list a1 a2 a3 a4 a5 a6))
         (ep-in (make-hardware-endpoint "input" "Default Microphone" "coreaudio://default-input"))
         (ep-out (make-hardware-endpoint "output" "Default Speaker" "coreaudio://default-output"))
         (ep-cdp (make-hardware-endpoint "cdp" "Chrome DevTools" "ws://127.0.0.1:9222/devtools/browser"))

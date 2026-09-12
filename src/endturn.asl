@@ -8,7 +8,7 @@
       is-dangling-aux-verb?
       extract-trailing-token
       analyze-turn-completion]
-  :i [(core/strings :a s)])
+  :i [(asl-text/string :a s)])
 
 (dfe TurnVerdict
   (:c complete [] "Utterance is grammatically complete")
@@ -23,9 +23,9 @@
   (:f is-complete Bool "True if utterance can be dispatched immediately")
   (:f trailing-token Str "Extracted trailing word token")
   (:f reason Str "Human-readable diagnostic reason")
-  (:f recommended-wait-ms Int64 "Recommended debounce silence wait in ms"))
+  (:f recommended-wait-ms I64 "Recommended debounce silence wait in ms"))
 
-(df make-turn-analysis [(verdict TurnVerdict) (is-complete Bool) (trailing Str) (reason Str) (wait-ms Int64)] -> TurnAnalysis
+(df make-turn-analysis [(verdict TurnVerdict) (is-complete Bool) (trailing Str) (reason Str) (wait-ms I64)] -> TurnAnalysis
   :d "Constructs a TurnAnalysis record"
   (TurnAnalysis
     :verdict verdict
@@ -168,7 +168,7 @@
             (words (string-split clean6 " "))]
         (if (list-empty? words)
           ""
-          (let [(last-word (list-last words))]
+          (let [(last-word (option-or (list-last words) ""))]
             (string-lower (string-trim last-word))))))))
 
 (df analyze-turn-completion [(utterance Str)] -> TurnAnalysis

@@ -42,7 +42,7 @@
 (df test-clean-voice-intent-end-to-end [] -> Bool
   (let [(res (ic/clean-voice-intent "ну эээ можешь пожалуйста запустить запустить тесты в шроуди"))]
     (assert (.-had-repetitions res) "repetitions detected in raw transcript")
-    (assert (= (.-cleaned-intent res) "запустить тесты в shrody") "end-to-end cleaned intent matches expectation")
+    (assert (= (.-cleaned-intent res) "запустить tests в shrody") "end-to-end cleaned intent matches expectation")
     true))
 
 (df run-all-intent-cleaner-tests [] -> Bool

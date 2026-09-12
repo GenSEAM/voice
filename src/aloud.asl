@@ -6,20 +6,20 @@
       expand-spoken-durations
       sanitize-chip-for-ear
       format-for-ear]
-  :i [(core/strings :a s)])
+  :i [(asl-text/string :a s)])
 
 (dfs AloudConfig
-  (:f max-seconds Int64 "Maximum duration of spoken response in seconds")
-  (:f chars-per-second Int64 "Estimated speaking rate in characters per second")
-  (:f max-chars Int64 "Hard character limit for synthesized speech"))
+  (:f max-seconds I64 "Maximum duration of spoken response in seconds")
+  (:f chars-per-second I64 "Estimated speaking rate in characters per second")
+  (:f max-chars I64 "Hard character limit for synthesized speech"))
 
 (dfs AloudSpeechResult
   (:f spoken-text Str "Sanitized and clipped text ready for TTS")
-  (:f char-count Int64 "Length of synthesized string")
-  (:f estimated-duration-seconds Float "Estimated spoken duration in seconds")
+  (:f char-count I64 "Length of synthesized string")
+  (:f estimated-duration-seconds F64 "Estimated spoken duration in seconds")
   (:f is-truncated Bool "True if response was clipped to fit duration budget"))
 
-(df make-aloud-config [(max-sec Int64) (rate-cps Int64)] -> AloudConfig
+(df make-aloud-config [(max-sec I64) (rate-cps I64)] -> AloudConfig
   :d "Constructs an AloudConfig record"
   (AloudConfig
     :max-seconds max-sec
@@ -36,8 +36,8 @@
         (c6 (string-replace c5 "]" ""))
         (c7 (string-replace c6 "{" ""))
         (c8 (string-replace c7 "}" ""))
-        (c9 (string-replace c8 "·" " — "))
-        (c10 (string-replace c9 "◆" ""))
+        (c9 (string-replace c8 " - " " -- "))
+        (c10 (string-replace c9 "[OK]" ""))
         (c11 (string-replace c10 ">" ""))
         (c12 (string-replace c11 "<" ""))]
     (string-trim c12)))
@@ -63,12 +63,11 @@
 
 (df sanitize-chip-for-ear [(chip Str)] -> Str
   :d "Transforms repository chips and task references into speakable words"
-  (let [(c1 (string-replace chip "·" " "))
-        (c2 (string-replace c1 "." " "))
-        (c3 (string-replace c2 "/" " "))
-        (c4 (string-replace c3 "_" " "))
-        (c5 (string-replace c4 "-" " "))]
-    (string-trim c5)))
+  (let [(c1 (string-replace chip "." " "))
+        (c2 (string-replace c1 "/" " "))
+        (c3 (string-replace c2 "_" " "))
+        (c4 (string-replace c3 "-" " "))]
+    (string-trim c4)))
 
 (df format-for-ear [(raw-response Str) (cfg AloudConfig)] -> AloudSpeechResult
   :d "Formats an agent response for ear consumption within strict speech duration limits"
@@ -80,13 +79,13 @@
       (AloudSpeechResult
         :spoken-text expanded
         :char-count len
-        :estimated-duration-seconds (/ (float len) (float (.-chars-per-second cfg)))
+        :estimated-duration-seconds (/ (as-f64 len) (as-f64 (.-chars-per-second cfg)))
         :is-truncated false)
       (let [(clipped (string-slice expanded 0 (- budget 1)))
-            (final-text (str clipped "…"))
+            (final-text (str clipped "..."))
             (final-len (string-length final-text))]
         (AloudSpeechResult
           :spoken-text final-text
           :char-count final-len
-          :estimated-duration-seconds (/ (float final-len) (float (.-chars-per-second cfg)))
+          :estimated-duration-seconds (/ (as-f64 final-len) (as-f64 (.-chars-per-second cfg)))
           :is-truncated true)))))

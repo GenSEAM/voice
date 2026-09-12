@@ -6,7 +6,7 @@
       supports-language?
       select-optimal-engine
       create-synthesis-job]
-  :i [(core/strings :a s)])
+  :i [(asl-text/string :a s)])
 
 (dfe TtsEngineKind
   (:c silero-onnx [] "Silero TTS v4/v5 ONNX 24kHz (native Russian and English)")
@@ -17,18 +17,18 @@
 (dfs TtsEngineConfig
   (:f engine TtsEngineKind "Selected synthesis engine backend")
   (:f model-path Str "Filesystem path or endpoint URL for engine model")
-  (:f sample-rate Int64 "Audio output sampling rate in Hz (e.g. 24000 or 48000)")
+  (:f sample-rate I64 "Audio output sampling rate in Hz (e.g. 24000 or 48000)")
   (:f language Str "Target language ISO code (ru or en)")
   (:f voice-id Str "Voice speaker profile identifier (e.g. xenia, baya, eugene, af_heart)")
-  (:f speed Float "Speaking tempo rate multiplier (1.0 = normal)"))
+  (:f speed F64 "Speaking tempo rate multiplier (1.0 = normal)"))
 
 (dfs TtsSynthesisJob
   (:f job-id Str "Unique synthesis task identifier")
   (:f text Str "Sanitized speech text to articulate")
   (:f config TtsEngineConfig "Engine configuration for job")
   (:f status Str "Execution state: pending, synthesizing, completed, failed")
-  (:f audio-samples-count Int64 "Number of generated audio samples")
-  (:f duration-ms Int64 "Duration of synthesized audio in ms"))
+  (:f audio-samples-count I64 "Number of generated audio samples")
+  (:f duration-ms I64 "Duration of synthesized audio in ms"))
 
 (df make-silero-config [(language Str) (voice-id Str)] -> TtsEngineConfig
   :d "Constructs a pre-calibrated Silero TTS ONNX configuration with full Russian and English support"
@@ -92,7 +92,7 @@
 (df create-synthesis-job [(job-id Str) (text Str) (cfg TtsEngineConfig)] -> TtsSynthesisJob
   :d "Instantiates a new TtsSynthesisJob record"
   (let [(char-count (string-length text))
-        (est-duration-ms (* (/ (* char-count 1000) 14) (float64-to-int64 (.-speed cfg))))
+        (est-duration-ms (as-i64 (* (as-f64 (/ (* char-count 1000) 14)) (.-speed cfg))))
         (samples-count (/ (* est-duration-ms (.-sample-rate cfg)) 1000))]
     (TtsSynthesisJob
       :job-id job-id
