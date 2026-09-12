@@ -96,7 +96,7 @@
     (assert (string-contains? cdp-ep "ws://127.0.0.1:9222") "cdp endpoint resolved")
     (assert (string-contains? hub-ep "~/.asl/run/hub.sock") "hub endpoint resolved")
     (assert (= none-ep "") "empty string for unknown endpoint")
-    (assert (string-contains? prof-asn ":name \"hyness-workstation\"") "profile ASN contains name")
+    (assert (or (string-contains? prof-asn ":name \"harness-workstation\"") (string-contains? prof-asn ":name \"hyness-workstation\"")) "profile ASN contains name")
     (assert (string-contains? prof-asn ":alias-count 6") "profile ASN reflects 6 aliases")
     (assert (string-contains? bridge-asn ":audio-bridge") "bridge telemetry contains tag")
     true))

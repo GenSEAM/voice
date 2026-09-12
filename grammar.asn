@@ -18,6 +18,11 @@
     (:sym :name "VoicePipelineConfig" :kind :type :tokens 1)
     (:sym :name "VoicePipelineState" :kind :type :tokens 1)
     (:sym :name "VoicePipelineResult" :kind :type :tokens 1)
+    (:sym :name "HarnessProfile" :kind :type :tokens 1)
+    (:sym :name "HarnessPhoneticAlias" :kind :type :tokens 2
+          :rationale "Phonetic alias mapping spoken Cyrillic terms to canonical English identifiers")
+    (:sym :name "HarnessHardwareEndpoint" :kind :type :tokens 2
+          :rationale "Audio and control hardware endpoint definition for workstation profile")
 
     ;; 2-Token Symbols (with :rationale)
     (:sym :name "compute-energy" :kind :fn :tokens 2

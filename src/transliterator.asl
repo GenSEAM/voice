@@ -3,6 +3,7 @@
   :x [PhoneticRule
       make-phonetic-rules
       disambiguate-homophones
+      apply-canonical-lexicon
       emit-asn-intent
       transliterate-voice-prompt]
   :i [(fast_path :a fp)])
@@ -56,6 +57,15 @@
             (string-replace acc (.-pattern r) (.-target r)))
           text
           rules)))
+
+(df apply-canonical-lexicon [(text String)] -> String
+  :d "Applies canonical lexicon mappings to normalize acoustic ASR mishearings to authoritative terms"
+  (let [(t1 (string-replace text "хайнесс" "harness"))
+        (t2 (string-replace t1 "ханес" "harness"))
+        (t3 (string-replace t2 "асекс" "genseam"))
+        (t4 (string-replace t3 "шроуди" "shrody"))
+        (t5 (string-replace t4 "пцп" "pcp"))]
+    t5))
 
 (df emit-asn-intent [(goal String) (actions (List String))] -> String
   :d "Synthesizes canonical ASN intent frame with goal and action DAG"
