@@ -1,14 +1,15 @@
 (module asl-voice/test-audio-bridge
-  :d "Unit verification test suite for Audio Bridge Ingestion, Ring Buffer Bounding, and Hyness Workstation Profile"
+  :d "Unit verification test suite for Audio Bridge Ingestion, Ring Buffer Bounding, and Harness Workstation Profile"
   :x [test-audio-bridge-initialization-and-ingestion
       test-ring-buffer-capacity-overflow-bounding
       test-quiet-edge-detection
       test-speech-window-draining
+      test-harness-profile-defaults-and-aliases
       test-hyness-profile-defaults-and-aliases
       test-hyness-endpoints-and-asn-rendering
       run-all-bridge-tests]
   :i [(audio_bridge :a ab)
-      (hyness_profile :a hp)])
+      (asl-voice/harness-profile :a hp)])
 
 (df test-audio-bridge-initialization-and-ingestion [] -> Bool
   (let [(cfg (ab/make-audio-bridge-config 16000 20 4 0.05))
@@ -100,12 +101,16 @@
     (assert (string-contains? bridge-asn ":audio-bridge") "bridge telemetry contains tag")
     true))
 
+(df test-harness-profile-defaults-and-aliases [] -> Bool
+  (test-hyness-profile-defaults-and-aliases))
+
 (df run-all-bridge-tests [] -> Bool
   (do
     (test-audio-bridge-initialization-and-ingestion)
     (test-ring-buffer-capacity-overflow-bounding)
     (test-quiet-edge-detection)
     (test-speech-window-draining)
+    (test-harness-profile-defaults-and-aliases)
     (test-hyness-profile-defaults-and-aliases)
     (test-hyness-endpoints-and-asn-rendering)
     true))

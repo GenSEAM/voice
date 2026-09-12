@@ -12,6 +12,7 @@
    "asl-voice/endturn"
    "asl-voice/fast-path"
    "asl-voice/heard-name"
+   "asl-voice/harness-profile"
    "asl-voice/hyness-profile"
    "asl-voice/intent-cleaner"
    "asl-voice/multilingual-matrix"
