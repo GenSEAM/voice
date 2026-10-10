@@ -1,16 +1,5 @@
-# @genseam/asl-voice (ASL Voice Assistant Bridge)
+# voice
 
-> [!IMPORTANT]
-> **Status: Conceptual Schema (`conceptual-schema`)**
-> This package defines formal AgentScript data records and protocol types for streaming speech chunks, voice intents, and voice activity detection (VAD). It is a **conceptual/theoretical interface specification**, not a live operating system audio driver. Speech synthesis and intent parsing functions operate on mock data structures without live microphone capture or speaker playback.
+Archived. Moved into the AgentScript monorepo as the asl-voice package.
 
-Real-time Voice Stream Assistant, 16kHz PCM Audio Bridge, and sub-millisecond Voice Router conceptual schema for AgentScript.
-
-## Features
-- **16kHz PCM Audio Streaming Protocol:** Data records and framing schemas for conversational voice agents.
-- **Voice Intent Schemas:** Speech-to-intent mappings and data structures.
-- **EDDIE Layer 2 Integration:** Connects speech input schemas into consultative clarification and follow-up loops.
-
-## License
-MIT
-
+This code now lives in the AgentScript monorepo at [`packages/asl-voice`](https://github.com/GenSEAM/asl/tree/main/packages/asl-voice). The history here stops at the last push to this repository; current history is in [GenSEAM/asl](https://github.com/GenSEAM/asl). The site is [aslang.dev](https://aslang.dev).
